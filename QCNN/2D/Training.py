@@ -3,6 +3,7 @@ import QCNN_circuit
 import Hierarchical_circuit
 import pennylane as qml
 from pennylane import numpy as np
+from unitary import dic_U_params
 import autograd.numpy as anp
 
 def square_loss(labels, predictions):
@@ -19,11 +20,11 @@ def cross_entropy(labels, predictions):
         loss = loss + c_entropy
     return -1 * loss
 
-def cost(params, X, Y, U, U_params, embedding_type, circuit, cost_fn):
+def cost(params, X, Y, U, embedding_type, circuit, cost_fn):
     if circuit == 'QCNN':
-        predictions = [QCNN_circuit.QCNN(x, params, U, U_params, embedding_type, cost_fn=cost_fn) for x in X]
+        predictions = [QCNN_circuit.QCNN(x, params, U, embedding_type, cost_fn=cost_fn) for x in X]
     elif circuit == 'Hierarchical':
-        predictions = [Hierarchical_circuit.Hierarchical_classifier(x, params, U, U_params, embedding_type, cost_fn=cost_fn) for x in X]
+        predictions = [Hierarchical_circuit.Hierarchical_classifier(x, params, U, embedding_type, cost_fn=cost_fn) for x in X]
 
     if cost_fn == 'mse':
         loss = square_loss(Y, predictions)
@@ -35,7 +36,9 @@ def cost(params, X, Y, U, U_params, embedding_type, circuit, cost_fn):
 steps = 200
 learning_rate = 0.01
 batch_size = 25
-def circuit_training(X_train, Y_train, U, U_params, embedding_type, circuit, cost_fn):
+def circuit_training(X_train, Y_train, U, embedding_type, circuit, cost_fn):
+    
+    U_params = dic_U_params[U]
     if circuit == 'QCNN':
         if U == 'U_SU4_no_pooling' or U == 'U_SU4_1D' or U == 'U_9_1D':
             total_params = U_params * 3
@@ -52,7 +55,7 @@ def circuit_training(X_train, Y_train, U, U_params, embedding_type, circuit, cos
         batch_index = np.random.randint(0, len(X_train), (batch_size,))
         X_batch = [X_train[i] for i in batch_index]
         Y_batch = [Y_train[i] for i in batch_index]
-        params, cost_new = opt.step_and_cost(lambda v: cost(v, X_batch, Y_batch, U, U_params, embedding_type, circuit, cost_fn),
+        params, cost_new = opt.step_and_cost(lambda v: cost(v, X_batch, Y_batch, U, embedding_type, circuit, cost_fn),
                                                      params)
         loss_history.append(cost_new)
         if it % 10 == 0:
