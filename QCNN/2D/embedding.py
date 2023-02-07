@@ -5,6 +5,7 @@ from pennylane.templates.embeddings import AmplitudeEmbedding, AngleEmbedding
 from pennylane.templates.state_preparations import MottonenStatePreparation
 import numpy as np
 from Angular_hybrid import Angular_Hybrid_4, Angular_Hybrid_2
+
 def data_embedding(X, embedding_type='Amplitude'):
     if embedding_type == 'Amplitude':
         AmplitudeEmbedding(X, wires=range(8), normalize=True)
