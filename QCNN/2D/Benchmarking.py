@@ -3,6 +3,7 @@ import Training
 import QCNN_circuit
 import Hierarchical_circuit
 import numpy as np
+from global_var import *
 
 def accuracy_test(predictions, labels, cost_fn, binary = True):
     if cost_fn == 'mse':
@@ -135,7 +136,7 @@ def Encoding_to_Embedding(Encoding):
     return Embedding
 
 
-def Benchmarking(dataset, classes, Unitaries, Vtaries, Structs, n_qbits, Encodings, circuit, cost_fn, binary=True):
+def Benchmarking(dataset, classes, Unitaries, Vtaries, Structs, Encodings, circuit, cost_fn, binary=True):
     I = len(Unitaries)
     J = len(Encodings)
 
