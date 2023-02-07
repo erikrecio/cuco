@@ -72,21 +72,19 @@ def QCNN_1D_circuit(U, params):
 
 dev = qml.device('default.qubit', wires = n_qbits)
 @qml.qnode(dev)
-def QCNN(X, params, U, V, embedding_type='Amplitude', cost_fn='cross_entropy'):
+def QCNN(X, params, U, V, struct, embedding_type='Amplitude', cost_fn='cross_entropy'):
 
 
     # Data Embedding
     embedding.data_embedding(X, embedding_type=embedding_type)
 
     # Quantum Convolutional Neural Network
-    if U in ['U_TTN', 'U_5', 'U_6', 'U_9', 'U_13', 'U_14', 'U_15', 'U_SO4', 'U_SU4']:
+    if struct == "default":
         QCNN_structure(U, V, params)
-    elif U == 'U_SU4_no_pooling':
-        QCNN_structure_without_pooling("U_SU4", params)
-    elif U == 'U_SU4_1D':
-        QCNN_1D_circuit("U_SU4", params)
-    elif U == 'U_9_1D':
-        QCNN_1D_circuit("U_9", params)
+    elif struct == 'no_pooling':
+        QCNN_structure_without_pooling(U, params)
+    elif struct == 'no_pooling_1D':
+        QCNN_1D_circuit(U, params)
     else:
         print("Invalid Unitary Ansatze")
         return False
