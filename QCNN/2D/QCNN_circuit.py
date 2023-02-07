@@ -2,11 +2,11 @@ import pennylane as qml
 from unitary import *
 import embedding
 import numpy as np
-from global_var import n_qbits
+from global_var import *
 
 
 def QCNN_structure(U, V, params):
-    layers = np.log2(n_qbits)
+    layers = int(np.log2(n_qbits))
     U_params = dic_U_params[U]
     V_params = dic_U_params[V]
     U = eval(U)
@@ -33,7 +33,7 @@ def QCNN_structure(U, V, params):
             
 
 def QCNN_structure_without_pooling(U, params):
-    layers = np.log2(n_qbits)
+    layers = int(np.log2(n_qbits))
     U_params = dic_U_params[U]
     U = eval(U)
     
@@ -53,7 +53,7 @@ def QCNN_structure_without_pooling(U, params):
 
 def QCNN_1D_circuit(U, params):
     
-    layers = np.log2(n_qbits)
+    layers = int(np.log2(n_qbits))
     U_params = dic_U_params[U]
     U = eval(U)
     
@@ -70,10 +70,9 @@ def QCNN_1D_circuit(U, params):
 
 
 
-dev = qml.device('default.qubit', wires = n_qbits)
+dev = qml.device(machine_type, wires = n_qbits)
 @qml.qnode(dev)
 def QCNN(X, params, U, V, struct, embedding_type='Amplitude', cost_fn='cross_entropy'):
-
 
     # Data Embedding
     embedding.data_embedding(X, embedding_type=embedding_type)
@@ -94,3 +93,65 @@ def QCNN(X, params, U, V, struct, embedding_type='Amplitude', cost_fn='cross_ent
     elif cost_fn == 'cross_entropy':
         result = qml.probs(wires=n_qbits//2)
     return result
+
+
+
+# --------------------------------------------------------- #
+# ----------------------- Pruebas ------------------------- #
+# --------------------------------------------------------- #
+ 
+import pennylane as qml
+from unitary import *
+import embedding
+import numpy as np
+from global_var import *
+
+U = 'U_SU4'
+V = 'Pooling_ansatz1'
+struct = "default"
+total_params = dic_U_params[U]*3 + dic_U_params[V]*3
+params = np.random.randn(total_params)
+n_qbits = 8
+
+dev = qml.device("qiskit.aer", wires = n_qbits)
+@qml.qnode(dev)
+def circuit(params, U = U, V = V, struct = struct):
+    
+    QCNN_structure(U, V, params)
+    result = qml.probs(wires=n_qbits//2)
+    
+    return result
+
+
+
+
+
+
+
+dev._circuit.draw(output="mpl")
+
+# print(dev.QCNN2)
+
+# circuit_drawer(QCNN2, output='mpl')
+
+# drawer = qml.draw(QCNN2)
+# print(drawer(params, U, V, struct, embedding_type='Amplitude', cost_fn='cross_entropy'))
+
+
+import pennylane as qml
+import numpy as np
+
+dev = qml.device("qiskit.aer", wires=4)
+
+@qml.qnode(dev)
+def circuit(weights):
+    qml.templates.StronglyEntanglingLayers(weights, wires=[0, 1, 2, 3])
+    return qml.expval(qml.PauliX(0) @ qml.PauliZ(2))
+weight_shape = qml.templates.StronglyEntanglingLayers.shape(n_layers=2, n_wires=4)
+weights = np.random.random(weight_shape)
+dev._circuit.draw(output="mpl")
+
+
+
+
+

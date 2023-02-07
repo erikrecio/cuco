@@ -15,11 +15,11 @@ cost_fn: 'mse' or 'cross_entropy'
 Note: when using 'mse' as cost_fn binary="True" is recommended, when using 'cross_entropy' as cost_fn must be binary="False".
 """
 
-Unitaries = ['U_SU4', 'U_SU4_1D', 'U_SU4_no_pooling', 'U_9_1D']
+Unitaries = ['U_SU4', 'U_SU4', 'U_SU4_no_pooling', 'U_9_1D']
 Vtaries = ["Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1"]
-Structs = ["default", "default", "default", "default"]
+Structs = ["default", "default", "no_pooling", "no_pooling_1D"]
 Encodings = ['resize256']
-dataset = 'fashion_mnist'
+dataset = 'mnist'
 classes = [0,1]
 binary = False
 cost_fn = 'cross_entropy'

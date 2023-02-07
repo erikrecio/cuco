@@ -38,7 +38,7 @@ def circuit_training(X_train, Y_train, U, V, struct, embedding_type, circuit, co
     
     U_params = dic_U_params[U]
     V_params = dic_U_params[U]
-    layers = np.log2(n_qbits)
+    layers = int(np.log2(n_qbits))
     
     if circuit == 'QCNN':
         if U == 'U_SU4_no_pooling' or U == 'U_SU4_1D' or U == 'U_9_1D':
@@ -47,7 +47,7 @@ def circuit_training(X_train, Y_train, U, V, struct, embedding_type, circuit, co
             total_params = U_params * layers + V_params * layers
     elif circuit == 'Hierarchical':
         total_params = U_params * 7
-
+    
     params = np.random.randn(total_params, requires_grad=True)
     opt = qml.NesterovMomentumOptimizer(stepsize=learning_rate)
     loss_history = []

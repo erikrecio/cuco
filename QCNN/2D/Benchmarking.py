@@ -142,22 +142,21 @@ def Benchmarking(dataset, classes, Unitaries, Vtaries, Structs, Encodings, circu
 
     for i in range(I):
         for j in range(J):
-            f = open('Result/result.txt', 'a')
+            f = open('result.txt', 'a') #f = open('Result/result.txt', 'a')
             U = Unitaries[i]
             V = Vtaries[i]
             struct = Structs[i]
             Encoding = Encodings[j]
             Embedding = Encoding_to_Embedding(Encoding)
 
-            X_train, X_test, Y_train, Y_test = data.data_load_and_process(dataset, classes=classes,
-                                                                          feature_reduction=Encoding, binary=binary)
+            X_train, X_test, Y_train, Y_test = data.data_load_and_process(dataset, classes=classes, feature_reduction=Encoding, binary=binary)
 
             print("\n")
             print("Loss History for " + circuit + " circuits, " + U + " " + Encoding + " with " + cost_fn)
-            loss_history, trained_params = Training.circuit_training(X_train, Y_train, U, V, struct, n_qbits, Embedding, circuit, cost_fn)
+            loss_history, trained_params = Training.circuit_training(X_train, Y_train, U, V, struct, Embedding, circuit, cost_fn)
 
             if circuit == 'QCNN':
-                predictions = [QCNN_circuit.QCNN(x, trained_params, U, V, struct, n_qbits, Embedding, cost_fn) for x in X_test]
+                predictions = [QCNN_circuit.QCNN(x, trained_params, U, V, struct, Embedding, cost_fn) for x in X_test]
             elif circuit == 'Hierarchical':
                 predictions = [Hierarchical_circuit.Hierarchical_classifier(x, trained_params, U, Embedding, cost_fn) for x in X_test]
 
