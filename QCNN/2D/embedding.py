@@ -6,14 +6,15 @@ from pennylane.templates.state_preparations import MottonenStatePreparation
 import numpy as np
 from Angular_hybrid import Angular_Hybrid_4, Angular_Hybrid_2
 
-def data_embedding(X, embedding_type='Amplitude'):
+#n_qubits has to be a 2^m number, where m is any positive integer
+def data_embedding(X, n_qbits, embedding_type='Amplitude'):
     if embedding_type == 'Amplitude':
-        AmplitudeEmbedding(X, wires=range(8), normalize=True)
+        AmplitudeEmbedding(X, wires=range(n_qbits), normalize=True)
     elif embedding_type == 'Angle':
-        AngleEmbedding(X, wires=range(8), rotation='Y')
+        AngleEmbedding(X, wires=range(n_qbits), rotation='Y')
     elif embedding_type == 'Angle-compact':
-        AngleEmbedding(X[:8], wires=range(8), rotation='X')
-        AngleEmbedding(X[8:16], wires=range(8), rotation='Y')
+        AngleEmbedding(X[:8], wires=range(n_qbits), rotation='X')
+        AngleEmbedding(X[8:16], wires=range(n_qbits), rotation='Y')
 
     # Hybrid Direct Embedding (HDE)
     elif embedding_type == 'Amplitude-Hybrid4-1' or embedding_type == 'Amplitude-Hybrid4-2' or \
