@@ -3,6 +3,7 @@ import Training
 import QCNN_circuit
 import Hierarchical_circuit
 import numpy as np
+import os.path
 from global_var import *
 
 def accuracy_test(predictions, labels, cost_fn, binary = True):
@@ -82,7 +83,7 @@ def Benchmarking(dataset, classes, Unitaries, Vtaries, Structs, Encodings, circu
 
     for i in range(I):
         for j in range(J):
-            f = open('result.txt', 'a') #f = open('Result/result.txt', 'a')
+            f = open(os.path.join(os.path.dirname(__file__), 'Result/result.txt'))   # concatenar os.pardir for parent directory (sense string)
             U = Unitaries[i]
             V = Vtaries[i]
             struct = Structs[i]
