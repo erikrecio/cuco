@@ -14,8 +14,8 @@ def data_embedding(X, embedding_type='Amplitude'):
     elif embedding_type == 'Angle':
         AngleEmbedding(X, wires=range(n_qbits), rotation='Y')
     elif embedding_type == 'Angle-compact':
-        AngleEmbedding(X[:8], wires=range(n_qbits), rotation='X')
-        AngleEmbedding(X[8:16], wires=range(n_qbits), rotation='Y')
+        AngleEmbedding(X[:n_qbits//2], wires=range(n_qbits), rotation='X')
+        AngleEmbedding(X[n_qbits//2:n_qbits], wires=range(n_qbits), rotation='Y')
 
     # Hybrid Direct Embedding (HDE)
     elif embedding_type == 'Amplitude-Hybrid4':

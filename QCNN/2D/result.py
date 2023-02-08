@@ -15,14 +15,51 @@ cost_fn: 'mse' or 'cross_entropy'
 Note: when using 'mse' as cost_fn binary="True" is recommended, when using 'cross_entropy' as cost_fn must be binary="False".
 """
 
-Unitaries = ['U_SU4', 'U_SU4', 'U_SU4_no_pooling', 'U_9_1D']
-Vtaries = ["Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1"]
-Structs = ["default", "default", "no_pooling", "no_pooling_1D"]
+
+    # 'resize256'               - 'Amplitude'
+    # 'pca8'                    - 'Angle'
+    # 'autoencoder8'            - 'Angle'
+    # 'pca16-compact'           - 'Angle-compact'
+    # 'autoencoder16-compact'   - 'Angle-compact'
+    
+    # # Amplitude Hybrid Embedding
+    # # 4 qubit block
+    # 'pca32'                   - 'Amplitude-Hybrid4'
+    # 'autoencoder32'           - 'Amplitude-Hybrid4'
+
+    # # 2 qubit block
+    # 'pca16'                   - 'Amplitude-Hybrid2'
+    # 'autoencoder16'           - 'Amplitude-Hybrid2'
+
+    # # Angular Hybrid Embedding
+    # # 4 qubit block
+    # 'pca30'                   - 'Angular-Hybrid4'
+    # 'autoencoder30'           - 'Angular-Hybrid4'
+
+    # # 2 qubit block
+    # 'pca12'                   - 'Angular-Hybrid2'
+    # 'autoencoder12'           - 'Angular-Hybrid2'
+
+# Paper
+Unitaries = ['U_SU4']           #['U_SU4', 'U_SU4', 'U_SU4_no_pooling', 'U_9_1D']
+Vtaries = ["Pooling_ansatz1"]   #["Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1"]
+Structs = ["default"]           #["default", "default", "no_pooling", "no_pooling_1D"]
 Encodings = ['resize256']
-dataset = 'mnist'
+dataset = 'mnist'              #'mnist', 'circle'
 classes = [0,1]
 binary = False
 cost_fn = 'cross_entropy'
+
+#2D
+Unitaries = ['U_SU4']           #['U_SU4', 'U_SU4', 'U_SU4_no_pooling', 'U_9_1D']
+Vtaries = ["Pooling_ansatz1"]   #["Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1"]
+Structs = ["default"]           #["default", "default", "no_pooling", "no_pooling_1D"]
+Encodings = ['pca8']
+dataset = 'circle'              #'mnist', 'circle'
+classes = [0,1]
+binary = False
+cost_fn = 'cross_entropy'
+
 
 Benchmarking.Benchmarking(dataset, classes, Unitaries, Vtaries, Structs, Encodings, circuit='QCNN', cost_fn=cost_fn, binary=binary)
 #Benchmarking.Benchmarking(dataset, classes, Unitaries, Encodings, circuit='Hierarchical', cost_fn=cost_fn, binary=binary)

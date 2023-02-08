@@ -1,4 +1,4 @@
-n_qbits = 8
+n_qbits = 2
 machine_type = 'default.qubit'
 
 # Circuit training parameters
