@@ -53,9 +53,9 @@ Unitaries = ['U_TTN', 'U_5', 'U_6', 'U_9', 'U_13', 'U_14', 'U_15', 'U_SO4', 'U_S
 Encodings = ['pca8']
 
 Vtaries = ["Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1"]
-Structs = ["no_pooling_1D", "no_pooling_1D", "no_pooling_1D", "no_pooling_1D", "no_pooling_1D", "no_pooling_1D", "no_pooling_1D", "no_pooling_1D", "no_pooling_1D"]
+Structs = ["pooling", "pooling", "pooling", "pooling", "pooling", "pooling", "pooling", "pooling", "pooling"]
 
-dataset = 'circle'
+dataset = 'sinus2'
 classes = [1,-1]
 binary = False
 cost_fn = 'cross_entropy'
