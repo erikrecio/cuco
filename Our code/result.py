@@ -50,12 +50,12 @@ cost_fn = 'cross_entropy'
 
 #2D
 Unitaries = ['U_TTN', 'U_5', 'U_6', 'U_9', 'U_13', 'U_14', 'U_15', 'U_SO4', 'U_SU4']
-Encodings = ['pca8']
+Encodings = ['resize256']
 
 Vtaries = ["Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1", "Pooling_ansatz1"]
 Structs = ["pooling", "pooling", "pooling", "pooling", "pooling", "pooling", "pooling", "pooling", "pooling"]
 
-dataset = 'sinus2'
+dataset = 'circle'
 classes = [1,-1]
 binary = False
 cost_fn = 'cross_entropy'
