@@ -32,8 +32,8 @@ def circuit(params, x, y):
     for i,p in enumerate(params):
         
         if i != 0:
-            qml.Rot(x[0], 0, 0, wires=0)
-            qml.Rot(x[1], 0, 0, wires=1)
+            qml.Rot(x[0,0], 0, 0, wires=0)
+            qml.Rot(x[0,1], 0, 0, wires=1)
         U_SU4(p, [0,1])
     
     return qml.expval(qml.Hermitian(y, wires=[0]))
