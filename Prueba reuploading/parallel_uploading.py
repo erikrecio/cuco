@@ -242,7 +242,7 @@ if __name__ == "__main__" :
 
     for it in range(epochs):
         for Xbatch, ybatch in iterate_minibatches(X_train, y_train, batch_size=batch_size):
-            variables, cost_num = opt.step_and_cost(cost, params, Xbatch, ybatch, state_labels)
+            variables, cost_value = opt.step_and_cost(cost, params, Xbatch, ybatch, state_labels)
             params = variables[0]
             
         # predicted_train, fidel_train = test(params, X_train, y_train, state_labels)
@@ -257,7 +257,7 @@ if __name__ == "__main__" :
         #         *res
         #     )
         # )
-        print(f'Epoch: {it + 1} | Cost: {cost_num}')
+        print(f'Epoch: {it + 1} | Cost: {cost_value}')
 
     predicted_test, fidel_test = test(params, X_test, y_test, state_labels)
     accuracy_test = accuracy_score(y_test, predicted_test)
