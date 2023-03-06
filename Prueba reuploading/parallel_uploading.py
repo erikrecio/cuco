@@ -11,30 +11,61 @@ import os.path
 # Set a random seed
 # np.random.seed(42)
 
+
+def data_load_and_process(dataset, n_train, n_test, classes=[1, -1], binary=True):
+    X_train, X_test = np.random.rand(n_train,2)*2-1,  np.random.rand(n_test,2)*2-1
+
+    if dataset == 'circle':
+        radius = 3/4   # 1/4 or 3/4 or np.sqrt(2 / np.pi)
+        Y_train = ((np.sum(X_train**2, axis=1) > radius**2).astype(int)*2-1).tolist()
+        Y_test  = ((np.sum( X_test**2, axis=1) > radius**2).astype(int)*2-1).tolist()
+    
+    elif dataset == 'sinus1':
+        Y_train = ((  X_train[:,1] > np.cos(3*X_train[:,0])  ).astype(int)*2-1).tolist()
+        Y_test  = ((   X_test[:,1] > np.cos(3* X_test[:,0])  ).astype(int)*2-1).tolist()
+    
+    elif dataset == 'sinus2':
+        Y_train = ((  X_train[:,1] > -np.sin(3*X_train[:,0]) ).astype(int)*2-1).tolist()
+        Y_test  = ((   X_test[:,1] > -np.sin(3* X_test[:,0]) ).astype(int)*2-1).tolist()
+    
+    else:
+        print("Incorrect dataset")
+        return False
+    
+    
+    if binary:
+        Y_train = [1 if y == classes[0] else 0 for y in Y_train]
+        Y_test = [1 if y == classes[0] else 0 for y in Y_test]
+    else:
+        Y_train = [1 if y == classes[0] else -1 for y in Y_train]
+        Y_test = [1 if y == classes[0] else -1 for y in Y_test]
+        
+    return X_train, X_test, Y_train, Y_test
+
 # Make a dataset of points inside and outside of a circle
-def circle(samples, center=[0.0, 0.0], radius=np.sqrt(2 / np.pi)):
-    """
-    Generates a dataset of points with 1/0 labels inside a given radius.
+# def circle(samples, center=[0.0, 0.0], radius=np.sqrt(2 / np.pi)):
+#     """
+#     Generates a dataset of points with 1/0 labels inside a given radius.
 
-    Args:
-        samples (int): number of samples to generate
-        center (tuple): center of the circle
-        radius (float: radius of the circle
+#     Args:
+#         samples (int): number of samples to generate
+#         center (tuple): center of the circle
+#         radius (float: radius of the circle
 
-    Returns:
-        Xvals (array[tuple]): coordinates of points
-        yvals (array[int]): classification labels
-    """
-    Xvals, yvals = [], []
+#     Returns:
+#         Xvals (array[tuple]): coordinates of points
+#         yvals (array[int]): classification labels
+#     """
+#     Xvals, yvals = [], []
 
-    for i in range(samples):
-        x = 2 * (np.random.rand(2)) - 1
-        y = 0
-        if np.linalg.norm(x - center) < radius:
-            y = 1
-        Xvals.append(x)
-        yvals.append(y)
-    return np.array(Xvals, requires_grad=False), np.array(yvals, requires_grad=False)
+#     for i in range(samples):
+#         x = 2 * (np.random.rand(2)) - 1
+#         y = 0
+#         if np.linalg.norm(x - center) < radius:
+#             y = 1
+#         Xvals.append(x)
+#         yvals.append(y)
+#     return np.array(Xvals, requires_grad=False), np.array(yvals, requires_grad=False)
 
 
 def plot_data(x, y, fig=None, ax=None):
@@ -253,15 +284,11 @@ def iterate_minibatches(inputs, targets, batch_size):
 if __name__ == "__main__" :
 
     # Generate training and test data
+    dataset = "sinus1"   # circle, sinus1, sinus2
     num_training = 200
     num_test = 2000
 
-    Xdata, y_train = circle(num_training)
-    X_train = np.hstack((Xdata, np.zeros((Xdata.shape[0], 1), requires_grad=False)))
-
-    Xtest, y_test = circle(num_test)
-    X_test = np.hstack((Xtest, np.zeros((Xtest.shape[0], 1), requires_grad=False)))
-
+    X_train, X_test, y_train, y_test = data_load_and_process(dataset, num_training, num_test)
 
     # Train using Adam optimizer and evaluate the classifier
     qcircuit = parallel_repetition # parallel_reuploading or parallel_repetition
@@ -337,6 +364,6 @@ if __name__ == "__main__" :
     ax2 = fig.add_subplot(1, 2, 2)
     ax2.scatter(list(zip(*X_test))[0], list(zip(*X_test))[1], 5, predicted_test)
 
-    file_name = f'{datetime.now().strftime("%d-%m-%Y %H-%M-%S")} - parallel_uploading, L = {num_layers}, epochs = {epochs}, acc = {accuracy_test}'
+    file_name = f'{datetime.now().strftime("%d-%m-%Y %H-%M-%S")} - {circuit_name}, L = {num_layers}, epochs = {epochs}, acc = {accuracy_test}'
     plt.savefig(os.path.join(os.path.dirname(__file__), f'Plots\\{file_name}.png'))
     # plt.show()

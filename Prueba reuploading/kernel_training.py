@@ -1,4 +1,7 @@
 import numpy as np
+from datetime import datetime
+import os.path
+
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
@@ -66,8 +69,20 @@ print("Predictions end. Accuracy starts.")
 acc = accuracy_score(predictions, y_test)
 print("Accuracy ends.")
 
-print(predictions)
-print(acc)
+
+# Image plotting
+fig = plt.figure(figsize=(11.2, 5))
+fig.suptitle(f"Truth vs Predicted - Kernel training, acc = {acc}")
+
+ax1 = fig.add_subplot(1, 2, 1)
+ax1.scatter(list(zip(*X_test))[0], list(zip(*X_test))[1], 5, y_test)
+
+ax2 = fig.add_subplot(1, 2, 2)
+ax2.scatter(list(zip(*X_test))[0], list(zip(*X_test))[1], 5, predictions)
+
+file_name = f'{datetime.now().strftime("%d-%m-%Y %H-%M-%S")} - Kernel training, acc = {acc}'
+plt.savefig(os.path.join(os.path.dirname(__file__), f'Plots\\{file_name}.png'))
+# plt.show()
 
 
 
