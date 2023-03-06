@@ -27,13 +27,38 @@ def circle(samples, center=[0.0, 0.0], radius=np.sqrt(2 / np.pi)):
         yvals.append(y)
     return np.array(Xvals), np.array(yvals)
 
+def data_load_and_process(dataset, n_train, n_test, binary=True):
+    X_train, X_test = np.random.rand(n_train,2)*2-1,  np.random.rand(n_test,2)*2-1
+
+    if dataset == 'circle':
+        radius = 3/4   # 1/4 or 3/4 or np.sqrt(2 / np.pi)
+        Y_train = ((np.sum(X_train**2, axis=1) > radius**2).astype(int)*2-1).tolist()
+        Y_test  = ((np.sum( X_test**2, axis=1) > radius**2).astype(int)*2-1).tolist()
+    
+    elif dataset == 'sinus1':
+        Y_train = ((  X_train[:,1] > np.cos(3*X_train[:,0])  ).astype(int)*2-1).tolist()
+        Y_test  = ((   X_test[:,1] > np.cos(3* X_test[:,0])  ).astype(int)*2-1).tolist()
+    
+    elif dataset == 'sinus2':
+        Y_train = ((  X_train[:,1] > -np.sin(3*X_train[:,0]) ).astype(int)*2-1).tolist()
+        Y_test  = ((   X_test[:,1] > -np.sin(3* X_test[:,0]) ).astype(int)*2-1).tolist()
+    
+    else:
+        print("Incorrect dataset")
+        return False
+    
+    if binary:
+        Y_train = [1 if y == 1 else 0 for y in Y_train]
+        Y_test = [1 if y == 1 else 0 for y in Y_test]
+        
+    return X_train, X_test, Y_train, Y_test
 
 
+dataset = "sinus2"  # circle, sinus1, sinus2
 num_training = 200
 num_test = 2000
 
-X_train, y_train = circle(num_training)
-X_test, y_test = circle(num_test)
+X_train, X_test, y_train, y_test = data_load_and_process(dataset, num_training, num_test, binary = False)
 
 scaler = StandardScaler().fit(X_train)
 X_train = scaler.transform(X_train)

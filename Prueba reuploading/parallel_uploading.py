@@ -12,7 +12,7 @@ import os.path
 # np.random.seed(42)
 
 
-def data_load_and_process(dataset, n_train, n_test, classes=[1, -1], binary=True):
+def data_load_and_process(dataset, n_train, n_test, binary=True):
     X_train, X_test = np.random.rand(n_train,2)*2-1,  np.random.rand(n_test,2)*2-1
 
     if dataset == 'circle':
@@ -34,11 +34,8 @@ def data_load_and_process(dataset, n_train, n_test, classes=[1, -1], binary=True
     
     
     if binary:
-        Y_train = [1 if y == classes[0] else 0 for y in Y_train]
-        Y_test = [1 if y == classes[0] else 0 for y in Y_test]
-    else:
-        Y_train = [1 if y == classes[0] else -1 for y in Y_train]
-        Y_test = [1 if y == classes[0] else -1 for y in Y_test]
+        Y_train = [1 if y == 1 else 0 for y in Y_train]
+        Y_test = [1 if y == 1 else 0 for y in Y_test]
         
     return X_train, X_test, Y_train, Y_test
 
