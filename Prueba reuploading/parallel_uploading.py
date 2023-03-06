@@ -9,7 +9,7 @@ from datetime import datetime
 import os.path
 
 # Set a random seed
-np.random.seed(42)
+# np.random.seed(42)
 
 # Make a dataset of points inside and outside of a circle
 def circle(samples, center=[0.0, 0.0], radius=np.sqrt(2 / np.pi)):
@@ -215,7 +215,7 @@ if __name__ == "__main__" :
     # Train using Adam optimizer and evaluate the classifier
     num_layers = 1
     learning_rate = 0.6
-    epochs = 10
+    epochs = 20
     batch_size = 32
 
     opt = AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999)
@@ -274,4 +274,4 @@ if __name__ == "__main__" :
 
     file_name = f'{datetime.now().strftime("%d-%m-%Y %H-%M-%S")} - parallel_uploading, L = {num_layers}, epochs = {epochs}, acc = {accuracy_test}'
     plt.savefig(os.path.join(os.path.dirname(__file__), f'Plots\\{file_name}.png'))
-    plt.show()
+    # plt.show()

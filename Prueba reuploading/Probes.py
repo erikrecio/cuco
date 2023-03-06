@@ -43,3 +43,9 @@ resultat = circuit(params, X_train, M)
 
 dev._circuit.draw(output ="mpl", interactive = True)
 # %%
+a = [1,2]
+b = [3,4]
+c = a*b
+
+print(c)
+# %%
