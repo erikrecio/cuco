@@ -75,7 +75,7 @@ def density_matrix(state):
 
 
 
-dev = qml.device("default.qubit", wires=2)
+dev = qml.device("default.qubit", wires=4)
 # Install any pennylane-plugin to run on some particular backend
 
 def U_SU4(params, wires = [0,1]): # 15 params
@@ -127,7 +127,8 @@ def U_SU16(params, wires = [0,1,2,3]): # 15 params
     qml.RZ(params[26], wires=wires[2])
     qml.RZ(params[27], wires=wires[3])
 
-
+# Install any pennylane-plugin to run on some particular backend
+dev = qml.device("default.qubit", wires=2)
 @qml.qnode(dev, interface="autograd")
 def parallel_reuploading(params, x, M):
     """A variational quantum circuit representing the Universal classifier.
@@ -150,7 +151,8 @@ def parallel_reuploading(params, x, M):
     
     return qml.expval(qml.Hermitian(M, wires=[0]))
 
-
+dev = qml.device("default.qubit", wires=4)
+@qml.qnode(dev, interface="autograd")
 def parallel_repetition(params, x, M):
 
     for i,p in enumerate(params):
@@ -162,7 +164,7 @@ def parallel_repetition(params, x, M):
             qml.RY(x[1], wires=3)
         U_SU16(p, [0,1,2,3])
 
-    pass
+    return qml.expval(qml.Hermitian(M, wires=[0]))
 
 
 def cost(params, x, y, state_labels=None):
@@ -262,8 +264,8 @@ if __name__ == "__main__" :
 
 
     # Train using Adam optimizer and evaluate the classifier
-    qcircuit = parallel_reuploading # parallel_reuploading or parallel_repetition
-    num_layers = 2
+    qcircuit = parallel_repetition # parallel_reuploading or parallel_repetition
+    num_layers = 1
     learning_rate = 0.1
     epochs = 20
     batch_size = 32
@@ -279,8 +281,11 @@ if __name__ == "__main__" :
     # initialize random weights
     if qcircuit == parallel_reuploading:
         params = np.random.uniform(size=(num_layers + 1, 15), requires_grad=True)
+        circuit_name = "parallel_reuploading"
+        
     elif qcircuit == parallel_repetition:
         params = np.random.uniform(size=(num_layers + 1, 28), requires_grad=True)
+        circuit_name = "parallel_repetition"
     
 
     # predicted_train, fidel_train = test(params, X_train, y_train, state_labels)
@@ -324,7 +329,7 @@ if __name__ == "__main__" :
            
     # Image plotting
     fig = plt.figure(figsize=(11.2, 5))
-    fig.suptitle(f"Truth vs Predicted - parallel_uploading, L = {num_layers}, epochs = {epochs}, acc = {accuracy_test}")
+    fig.suptitle(f"Truth vs Predicted - {circuit_name}, L = {num_layers}, epochs = {epochs}, acc = {accuracy_test}")
 
     ax1 = fig.add_subplot(1, 2, 1)
     ax1.scatter(list(zip(*X_test))[0], list(zip(*X_test))[1], 5, y_test)
