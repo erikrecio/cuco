@@ -72,17 +72,13 @@ def density_matrix(state):
     """
     return state * np.conj(state).T
 
-label_0 = [[1], [0]]
-label_1 = [[0], [1]]
-state_labels = np.array([label_0, label_1], requires_grad=False)
-# print(state_labels)
+
 
 
 dev = qml.device("default.qubit", wires=2)
 # Install any pennylane-plugin to run on some particular backend
 
-
-def U_SU4(params, wires): # 15 params
+def U_SU4(params, wires = [0,1]): # 15 params
     qml.U3(params[0], params[1], params[2], wires=wires[0])
     qml.U3(params[3], params[4], params[5], wires=wires[1])
     qml.CNOT(wires=[wires[0], wires[1]])
@@ -94,8 +90,46 @@ def U_SU4(params, wires): # 15 params
     qml.U3(params[9], params[10], params[11], wires=wires[0])
     qml.U3(params[12], params[13], params[14], wires=wires[1])
 
+def U_SU16(params, wires = [0,1,2,3]): # 15 params
+    qml.RX(params[0], wires=wires[0])
+    qml.RX(params[1], wires=wires[1])
+    qml.RX(params[2], wires=wires[2])
+    qml.RX(params[3], wires=wires[3])
+    
+    qml.RZ(params[4], wires=wires[0])
+    qml.RZ(params[5], wires=wires[1])
+    qml.RZ(params[6], wires=wires[2])
+    qml.RZ(params[7], wires=wires[3])
+
+    qml.CRX(params[8], wires=[wires[3], wires[2]])
+    qml.CRX(params[9], wires=[wires[3], wires[1]])
+    qml.CRX(params[10], wires=[wires[3], wires[0]])
+
+    qml.CRX(params[11], wires=[wires[2], wires[3]])
+    qml.CRX(params[12], wires=[wires[2], wires[1]])
+    qml.CRX(params[13], wires=[wires[2], wires[0]])
+
+    qml.CRX(params[14], wires=[wires[1], wires[3]])
+    qml.CRX(params[15], wires=[wires[1], wires[2]])
+    qml.CRX(params[16], wires=[wires[1], wires[0]])
+
+    qml.CRX(params[17], wires=[wires[0], wires[3]])
+    qml.CRX(params[18], wires=[wires[0], wires[2]])
+    qml.CRX(params[19], wires=[wires[0], wires[1]])
+
+    qml.RX(params[20], wires=wires[0])
+    qml.RX(params[21], wires=wires[1])
+    qml.RX(params[22], wires=wires[2])
+    qml.RX(params[23], wires=wires[3])
+
+    qml.RZ(params[24], wires=wires[0])
+    qml.RZ(params[25], wires=wires[1])
+    qml.RZ(params[26], wires=wires[2])
+    qml.RZ(params[27], wires=wires[3])
+
+
 @qml.qnode(dev, interface="autograd")
-def qcircuit(params, x, y):
+def parallel_reuploading(params, x, M):
     """A variational quantum circuit representing the Universal classifier.
 
     Args:
@@ -114,7 +148,22 @@ def qcircuit(params, x, y):
             qml.RY(x[1], wires=1)
         U_SU4(p, [0,1])
     
-    return qml.expval(qml.Hermitian(y, wires=[0]))
+    return qml.expval(qml.Hermitian(M, wires=[0]))
+
+
+def parallel_repetition(params, x, M):
+
+    for i,p in enumerate(params):
+    
+        if i != 0:
+            qml.RY(x[0], wires=0)
+            qml.RY(x[1], wires=1)
+            qml.RY(x[0], wires=2)
+            qml.RY(x[1], wires=3)
+        U_SU16(p, [0,1,2,3])
+
+    pass
+
 
 def cost(params, x, y, state_labels=None):
     """Cost function to be minimized.
@@ -213,15 +262,26 @@ if __name__ == "__main__" :
 
 
     # Train using Adam optimizer and evaluate the classifier
-    num_layers = 1
-    learning_rate = 0.6
+    qcircuit = parallel_reuploading # parallel_reuploading or parallel_repetition
+    num_layers = 2
+    learning_rate = 0.1
     epochs = 20
     batch_size = 32
 
+
+    label_0 = [[1], [0]]
+    label_1 = [[0], [1]]
+    state_labels = np.array([label_0, label_1], requires_grad=False)
+    
+    # print(state_labels)
     opt = AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999)
 
     # initialize random weights
-    params = np.random.uniform(size=(num_layers + 1, 15), requires_grad=True)
+    if qcircuit == parallel_reuploading:
+        params = np.random.uniform(size=(num_layers + 1, 15), requires_grad=True)
+    elif qcircuit == parallel_repetition:
+        params = np.random.uniform(size=(num_layers + 1, 28), requires_grad=True)
+    
 
     # predicted_train, fidel_train = test(params, X_train, y_train, state_labels)
     # accuracy_train = accuracy_score(y_train, predicted_train)
