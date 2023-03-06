@@ -160,8 +160,8 @@ def parallel_repetition(params, x, M):
         if i != 0:
             qml.RY(x[0], wires=0)
             qml.RY(x[1], wires=1)
-            qml.RY(x[0], wires=2)
-            qml.RY(x[1], wires=3)
+            qml.RY(2*x[0], wires=2)
+            qml.RY(2*x[1], wires=3)
         U_SU16(p, [0,1,2,3])
 
     return qml.expval(qml.Hermitian(M, wires=[0]))
@@ -282,7 +282,7 @@ if __name__ == "__main__" :
     if qcircuit == parallel_reuploading:
         params = np.random.uniform(size=(num_layers + 1, 15), requires_grad=True)
         circuit_name = "parallel_reuploading"
-        
+
     elif qcircuit == parallel_repetition:
         params = np.random.uniform(size=(num_layers + 1, 28), requires_grad=True)
         circuit_name = "parallel_repetition"
