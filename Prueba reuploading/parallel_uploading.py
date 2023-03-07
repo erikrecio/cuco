@@ -102,10 +102,6 @@ def density_matrix(state):
 
 
 
-
-dev = qml.device("default.qubit", wires=4)
-# Install any pennylane-plugin to run on some particular backend
-
 def U_SU4(params, wires = [0,1]): # 15 params
     qml.U3(params[0], params[1], params[2], wires=wires[0])
     qml.U3(params[3], params[4], params[5], wires=wires[1])
@@ -156,8 +152,8 @@ def U_SU16(params, wires = [0,1,2,3]): # 15 params
     qml.RZ(params[27], wires=wires[3])
 
 # Install any pennylane-plugin to run on some particular backend
-dev = qml.device("default.qubit", wires=2)
-@qml.qnode(dev, interface="autograd")
+dev = qml.device("lightning.qubit", wires=2)
+@qml.qnode(dev, interface="jax", diff_method ="adjoint")
 def parallel_reuploading(params, x, M):
     """A variational quantum circuit representing the Universal classifier.
 
@@ -179,8 +175,8 @@ def parallel_reuploading(params, x, M):
     
     return qml.expval(qml.Hermitian(M, wires=[0]))
 
-dev = qml.device("default.qubit", wires=4)
-@qml.qnode(dev, interface="autograd")
+dev = qml.device("lightning.qubit", wires=4)
+@qml.qnode(dev, interface="autograd", diff_method="adjoint")
 def parallel_repetition(params, x, M):
 
     for i,p in enumerate(params):
@@ -188,8 +184,8 @@ def parallel_repetition(params, x, M):
         if i != 0:
             qml.RY(x[0], wires=0)
             qml.RY(x[1], wires=1)
-            qml.RY(2*x[0], wires=2)
-            qml.RY(2*x[1], wires=3)
+            qml.RY(x[0], wires=2)
+            qml.RY(x[1], wires=3)
         U_SU16(p, [0,1,2,3])
 
     return qml.expval(qml.Hermitian(M, wires=[0]))
@@ -281,15 +277,15 @@ def iterate_minibatches(inputs, targets, batch_size):
 if __name__ == "__main__" :
 
     # Generate training and test data
-    dataset = "sinus1"   # circle, sinus1, sinus2
+    dataset = "sinus2"   # circle, sinus1, sinus2
     num_training = 200
     num_test = 2000
 
     X_train, X_test, y_train, y_test = data_load_and_process(dataset, num_training, num_test)
 
     # Train using Adam optimizer and evaluate the classifier
-    qcircuit = parallel_repetition # parallel_reuploading or parallel_repetition
-    num_layers = 1
+    qcircuit = parallel_reuploading # parallel_reuploading or parallel_repetition
+    num_layers = 2
     learning_rate = 0.1
     epochs = 20
     batch_size = 32
