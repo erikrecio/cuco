@@ -276,87 +276,95 @@ def iterate_minibatches(inputs, targets, batch_size):
 
 if __name__ == "__main__" :
 
-    # Generate training and test data
-    dataset = "sinus2"   # circle, sinus1, sinus2
-    num_training = 200
-    num_test = 2000
-
-    X_train, X_test, y_train, y_test = data_load_and_process(dataset, num_training, num_test)
-
-    # Train using Adam optimizer and evaluate the classifier
-    qcircuit = parallel_reuploading # parallel_reuploading or parallel_repetition
-    num_layers = 2
-    learning_rate = 0.1
-    epochs = 20
-    batch_size = 32
-
-
-    label_0 = [[1], [0]]
-    label_1 = [[0], [1]]
-    state_labels = np.array([label_0, label_1], requires_grad=False)
+    v_dataset = ["circle", "sinus1", "sinus2"]
+    v_qcircuit = [parallel_reuploading, parallel_reuploading, parallel_reuploading]
+    v_num_layers = [4]
     
-    # print(state_labels)
-    opt = AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999)
-
-    # initialize random weights
-    if qcircuit == parallel_reuploading:
-        params = np.random.uniform(size=(num_layers + 1, 15), requires_grad=True)
-        circuit_name = "parallel_reuploading"
-
-    elif qcircuit == parallel_repetition:
-        params = np.random.uniform(size=(num_layers + 1, 28), requires_grad=True)
-        circuit_name = "parallel_repetition"
+    for dataset in v_dataset:
+        for qcircuit in v_qcircuit:
+            for num_layers in v_num_layers:
     
+                # Generate training and test data
+                # dataset = "sinus1"   # circle, sinus1, sinus2
+                num_training = 200
+                num_test = 2000
 
-    # predicted_train, fidel_train = test(params, X_train, y_train, state_labels)
-    # accuracy_train = accuracy_score(y_train, predicted_train)
+                X_train, X_test, y_train, y_test = data_load_and_process(dataset, num_training, num_test)
 
-    # predicted_test, fidel_test = test(params, X_test, y_test, state_labels)
-    # accuracy_test = accuracy_score(y_test, predicted_test)
+                # Train using Adam optimizer and evaluate the classifier
+                # qcircuit = parallel_reuploading # parallel_reuploading or parallel_repetition
+                # num_layers = 2
+                learning_rate = 0.1
+                epochs = 20
+                batch_size = 32
 
-    # # save predictions with random weights for comparison
-    # initial_predictions = predicted_test
 
-    # loss = cost(params, X_test, y_test, state_labels)
+                label_0 = [[1], [0]]
+                label_1 = [[0], [1]]
+                state_labels = np.array([label_0, label_1], requires_grad=False)
+                
+                # print(state_labels)
+                opt = AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999)
 
-    # print(
-    #     "Epoch: {:2d} | Cost: {:3f} | Train accuracy: {:3f} | Test Accuracy: {:3f}".format(
-    #         0, loss, accuracy_train, accuracy_test
-    #     )
-    # )
+                # initialize random weights
+                if qcircuit == parallel_reuploading:
+                    params = np.random.uniform(size=(num_layers + 1, 15), requires_grad=True)
+                    circuit_name = "parallel_reuploading"
 
-    for it in range(epochs):
-        for Xbatch, ybatch in iterate_minibatches(X_train, y_train, batch_size=batch_size):
-            variables, cost_value = opt.step_and_cost(cost, params, Xbatch, ybatch, state_labels)
-            params = variables[0]
-            
-        # predicted_train, fidel_train = test(params, X_train, y_train, state_labels)
-        # accuracy_train = accuracy_score(y_train, predicted_train)
-        # loss = cost(params, X_train, y_train, state_labels)
+                elif qcircuit == parallel_repetition:
+                    params = np.random.uniform(size=(num_layers + 1, 28), requires_grad=True)
+                    circuit_name = "parallel_repetition"
+                
 
-        # predicted_test, fidel_test = test(params, X_test, y_test, state_labels)
-        # accuracy_test = accuracy_score(y_test, predicted_test)
-        # res = [it + 1, loss, accuracy_train, accuracy_test]
-        # print(
-        #     "Epoch: {:2d} | Loss: {:3f} | Train accuracy: {:3f} | Test accuracy: {:3f}".format(
-        #         *res
-        #     )
-        # )
-        print(f'Epoch: {it + 1} | Cost: {cost_value}')
+                # predicted_train, fidel_train = test(params, X_train, y_train, state_labels)
+                # accuracy_train = accuracy_score(y_train, predicted_train)
 
-    predicted_test, fidel_test = test(params, X_test, y_test, state_labels)
-    accuracy_test = accuracy_score(y_test, predicted_test)
-           
-    # Image plotting
-    fig = plt.figure(figsize=(11.2, 5))
-    fig.suptitle(f"Truth vs Predicted - {circuit_name}, L = {num_layers}, epochs = {epochs}, acc = {accuracy_test}")
+                # predicted_test, fidel_test = test(params, X_test, y_test, state_labels)
+                # accuracy_test = accuracy_score(y_test, predicted_test)
 
-    ax1 = fig.add_subplot(1, 2, 1)
-    ax1.scatter(list(zip(*X_test))[0], list(zip(*X_test))[1], 5, y_test)
+                # # save predictions with random weights for comparison
+                # initial_predictions = predicted_test
 
-    ax2 = fig.add_subplot(1, 2, 2)
-    ax2.scatter(list(zip(*X_test))[0], list(zip(*X_test))[1], 5, predicted_test)
+                # loss = cost(params, X_test, y_test, state_labels)
 
-    file_name = f'{datetime.now().strftime("%d-%m-%Y %H-%M-%S")} - {circuit_name}, L = {num_layers}, epochs = {epochs}, acc = {accuracy_test}'
-    plt.savefig(os.path.join(os.path.dirname(__file__), f'Plots\\{file_name}.png'))
-    # plt.show()
+                # print(
+                #     "Epoch: {:2d} | Cost: {:3f} | Train accuracy: {:3f} | Test Accuracy: {:3f}".format(
+                #         0, loss, accuracy_train, accuracy_test
+                #     )
+                # )
+
+                for it in range(epochs):
+                    for Xbatch, ybatch in iterate_minibatches(X_train, y_train, batch_size=batch_size):
+                        variables, cost_value = opt.step_and_cost(cost, params, Xbatch, ybatch, state_labels)
+                        params = variables[0]
+                        
+                    # predicted_train, fidel_train = test(params, X_train, y_train, state_labels)
+                    # accuracy_train = accuracy_score(y_train, predicted_train)
+                    # loss = cost(params, X_train, y_train, state_labels)
+
+                    # predicted_test, fidel_test = test(params, X_test, y_test, state_labels)
+                    # accuracy_test = accuracy_score(y_test, predicted_test)
+                    # res = [it + 1, loss, accuracy_train, accuracy_test]
+                    # print(
+                    #     "Epoch: {:2d} | Loss: {:3f} | Train accuracy: {:3f} | Test accuracy: {:3f}".format(
+                    #         *res
+                    #     )
+                    # )
+                    print(f'Epoch: {it + 1} | Cost: {cost_value}')
+
+                predicted_test, fidel_test = test(params, X_test, y_test, state_labels)
+                accuracy_test = accuracy_score(y_test, predicted_test)
+                    
+                # Image plotting
+                fig = plt.figure(figsize=(11.2, 5))
+                fig.suptitle(f"Truth vs Predicted - {circuit_name}, L = {num_layers}, epochs = {epochs}, acc = {accuracy_test}")
+
+                ax1 = fig.add_subplot(1, 2, 1)
+                ax1.scatter(list(zip(*X_test))[0], list(zip(*X_test))[1], 5, y_test)
+
+                ax2 = fig.add_subplot(1, 2, 2)
+                ax2.scatter(list(zip(*X_test))[0], list(zip(*X_test))[1], 5, predicted_test)
+
+                file_name = f'{datetime.now().strftime("%d-%m-%Y %H-%M-%S")} - {circuit_name}, L = {num_layers}, epochs = {epochs}, acc = {accuracy_test}'
+                plt.savefig(os.path.join(os.path.dirname(__file__), f'Plots\\{file_name}.png'))
+                # plt.show()
