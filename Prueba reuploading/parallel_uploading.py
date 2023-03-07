@@ -153,7 +153,7 @@ def U_SU16(params, wires = [0,1,2,3]): # 15 params
 
 # Install any pennylane-plugin to run on some particular backend
 dev = qml.device("lightning.qubit", wires=2)
-@qml.qnode(dev, interface="jax", diff_method ="adjoint")
+@qml.qnode(dev, interface="autograd", diff_method ="adjoint")
 def parallel_reuploading(params, x, M):
     """A variational quantum circuit representing the Universal classifier.
 
