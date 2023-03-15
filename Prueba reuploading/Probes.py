@@ -110,3 +110,23 @@ resultat = circuit(params, 3, M)
 
 dev._circuit.draw(output ="mpl", interactive = True)
 # %%
+import numpy as np
+
+y_real = np.array([1,1,0,1,0,0,0,0,1,1,0,1,0,0,1,1,1,1])
+y_pred = np.array([0,1,0,1,1,0,1,1,0,1,0,0,1,1,0,1,0,0])
+
+TP = sum(y_real * y_pred)
+FP = sum(np.logical_not(y_real) * y_pred)
+TN = sum(np.logical_not(y_real) * np.logical_not(y_pred))
+FN = sum(y_real * np.logical_not(y_pred))
+
+accuracy = (TP+TN)/(TP+TN+FP+FN)
+precision = TP/(TP+FP)
+recall = TP/(TP+FN)
+F1 = 2*precision*recall / (precision + recall)
+specificity = TN/(TN+FP)
+
+print(TP, FP, TN, FN)
+print(accuracy, precision, recall, F1, specificity)
+
+# %%

@@ -242,19 +242,19 @@ def test(params, x, y, state_labels=None):
     return np.array(predicted), np.array(fidelity_values)
 
 
-def accuracy_score(y_true, y_pred):
-    """Accuracy score.
+def accuracy_score(y_real, y_pred):
+    TP = sum(y_real * y_pred)
+    FP = sum(np.logical_not(y_real) * y_pred)
+    TN = sum(np.logical_not(y_real) * np.logical_not(y_pred))
+    FN = sum(y_real * np.logical_not(y_pred))
 
-    Args:
-        y_true (array[float]): 1-d array of targets
-        y_predicted (array[float]): 1-d array of predictions
-        state_labels (array[float]): 1-d array of state representations for labels
+    accuracy = (TP+TN)/(TP+TN+FP+FN)
+    precision = TP/(TP+FP)
+    recall = TP/(TP+FN)
+    F1 = 2*precision*recall / (precision + recall)
+    specificity = TN/(TN+FP)
 
-    Returns:
-        score (float): the fraction of correctly classified samples
-    """
-    score = y_true == y_pred
-    return score.sum() / len(y_true)
+    return accuracy, precision, recall, F1, specificity
 
 
 def iterate_minibatches(inputs, targets, batch_size):
@@ -353,11 +353,13 @@ if __name__ == "__main__" :
                     print(f'Epoch: {it + 1} | Cost: {cost_value}')
 
                 predicted_test, fidel_test = test(params, X_test, y_test, state_labels)
-                accuracy_test = accuracy_score(y_test, predicted_test)
-                    
+                accuracy, precision, recall, F1, specificity = accuracy_score(y_test, predicted_test)
+                
+                print(f"accuracy = {accuracy*100:.2f}%, precision = {precision*100:.2f}%, recall = {recall*100:.2f}%, F1 = {F1*100:.2f}%, specificity = {specificity*100:.2f}%")
+                
                 # Image plotting
                 fig = plt.figure(figsize=(11.2, 5))
-                fig.suptitle(f"Truth vs Predicted - {circuit_name}, L = {num_layers}, epochs = {epochs}, acc = {accuracy_test}")
+                fig.suptitle(f"Truth vs Predicted - {circuit_name}, L = {num_layers}, epochs = {epochs}, acc = {accuracy}")
 
                 ax1 = fig.add_subplot(1, 2, 1)
                 ax1.scatter(list(zip(*X_test))[0], list(zip(*X_test))[1], 5, y_test)
@@ -365,6 +367,6 @@ if __name__ == "__main__" :
                 ax2 = fig.add_subplot(1, 2, 2)
                 ax2.scatter(list(zip(*X_test))[0], list(zip(*X_test))[1], 5, predicted_test)
 
-                file_name = f'{datetime.now().strftime("%d-%m-%Y %H-%M-%S")} - {circuit_name}, L = {num_layers}, epochs = {epochs}, acc = {accuracy_test}'
-                plt.savefig(os.path.join(os.path.dirname(__file__), f'Plots\\{file_name}.png'))
-                # plt.show()
+                file_name = f'{datetime.now().strftime("%d-%m-%Y %H-%M-%S")} - {circuit_name}, L = {num_layers}, epochs = {epochs}, acc = {accuracy}'
+                #plt.savefig(os.path.join(os.path.dirname(__file__), f'Plots\\{file_name}.png'))
+                plt.show()
