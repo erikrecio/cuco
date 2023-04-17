@@ -111,6 +111,10 @@ ENV/
 env.bak/
 venv.bak/
 
+Quanvolutional NN/experiments/venv/
+Quanvolutional NN/experiments/venv39/
+Quanvolutional NN/experiments/mnist_encoded/
+
 # Spyder project settings
 .spyderproject
 .spyproject
